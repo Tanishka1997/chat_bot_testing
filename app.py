@@ -1,13 +1,14 @@
 import os
 import sys
 import json
+
 import apiai
 import requests
-from flask import Flask, request,make_response
+from flask import Flask, request, make_response
 
 app = Flask(__name__)
-
 CLIENT_ACCESS_TOKEN = 'e06246a85e0743b4af89a0a3240e92de'
+
 @app.route('/', methods=['GET'])
 def verify():
     # when the endpoint is registered as a webhook, it must echo back
@@ -17,24 +18,8 @@ def verify():
             return "Verification token mismatch", 403
         return request.args["hub.challenge"], 200
 
-    return "Hello world", 200
+    return "Hello world method get", 200
 
-@app.route('/getresponse',methods=['POST'])
-def getresponse():
-    req = request.get_json(silent=True, force=True)
-    print("Request:")
-    print(json.dumps(req, indent=4))
-    res={
-        "speech":"hi",
-        "displayText":"hi",
-        "source":"agent"
-    }
-    res = json.dumps(res, indent=4)
-    # print(res)
-
-    r = make_response(res)
-    r.headers['Content-Type'] = 'application/json'
-    return r
 
 @app.route('/', methods=['POST'])
 def webhook():
@@ -55,7 +40,7 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
-                    send_message(sender_id,processResponse(message_text))
+                    send_message(sender_id, process_text_message(message_text))
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -68,23 +53,43 @@ def webhook():
 
     return "ok", 200
 
-def processResponse(message_text):
-        ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
-        request = ai.text_request()
-        request.lang = 'en'  # optional, default value equal 'en'
-        # request.session_id = "<SESSION ID, UBIQUE FOR EACH USER>"
-        request.query = message_text
-        response = request.getresponse()
-        request.session_id = "Ajf54Trg"
-        responsestr = response.read().decode('utf-8')
-        response_obj = json.loads(responsestr)
-        responseStatus = response['status']['code']
-        if (responseStatus == 200):
-        # Sending the textual response of the bot.
-            return (response['result']['fulfillment']['speech'])
+@app.route('/getdata', methods=['POST'])
+def getdata():
+    req = request.get_json(silent=True, force=True)
+    data = request.get_json()
+    print("Request:")
+    print(json.dumps(req, indent=4))
 
-        else:
-            return ("Sorry, I couldn't understand that question")
+    res = {
+        "speech": "hey",
+        "displayText": "hey",
+        # "data": data,
+        # "contextOut": [],
+        "source": "agent"
+        }
+    res = json.dumps(res, indent=4)
+    # print(res)
+    r = make_response(res)
+    r.headers['Content-Type'] = 'application/json'
+    return r
+
+def process_text_message(msg):
+    ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
+    request = ai.text_request()
+    request.lang = 'en'  # optional, default value equal 'en'
+    request.session_id = "Ajf54Trh"
+    request.query = msg
+
+    response = json.loads(request.getresponse().read().decode('utf-8'))
+    log(response)
+    responseStatus = response['status']['code']
+    if (responseStatus == 200):
+        # Sending the textual response of the bot.
+        return (response['result']['fulfillment']['speech'])
+
+    else:
+        return ("Sorry, I couldn't understand that question")
+
 
 def send_message(recipient_id, message_text):
 
