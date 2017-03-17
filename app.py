@@ -75,6 +75,7 @@ def processResponse(message_text):
         # request.session_id = "<SESSION ID, UBIQUE FOR EACH USER>"
         request.query = message_text
         response = request.getresponse()
+        request.session_id = "Ajf54Trg"
         responsestr = response.read().decode('utf-8')
         response_obj = json.loads(responsestr)
         log(responsestr+"hello")
