@@ -77,7 +77,7 @@ def processResponse(message_text):
         response = request.getresponse()
         responsestr = response.read().decode('utf-8')
         response_obj = json.loads(responsestr)
-        log(responsestr)
+        log(responsestr+"hello")
         return response_obj
 
 def send_message(recipient_id, message_text):
