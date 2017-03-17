@@ -19,6 +19,23 @@ def verify():
 
     return "Hello world", 200
 
+@app.route('/getrespone',methods=['POST'])
+def getresponse():
+    req = request.get_json(silent=True, force=True)
+    print("Request:")
+    print(json.dumps(req, indent=4))
+    res = processRequest(req)
+    res={
+        "speech":"hi",
+        "displayText":"hi",
+        "source":"agent"
+    }
+    res = json.dumps(res, indent=4)
+    # print(res)
+
+    r = make_response(res)
+    r.headers['Content-Type'] = 'application/json'
+    return r
 
 @app.route('/', methods=['POST'])
 def webhook():
