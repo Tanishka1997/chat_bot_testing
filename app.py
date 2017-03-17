@@ -1,13 +1,13 @@
 import os
 import sys
 import json
-
+import apiai
 import requests
 from flask import Flask, request,make_response
 
 app = Flask(__name__)
 
-
+CLIENT_ACCESS_TOKEN = 'e06246a85e0743b4af89a0a3240e92de'
 @app.route('/', methods=['GET'])
 def verify():
     # when the endpoint is registered as a webhook, it must echo back
@@ -24,7 +24,6 @@ def getresponse():
     req = request.get_json(silent=True, force=True)
     print("Request:")
     print(json.dumps(req, indent=4))
-    
     res={
         "speech":"hi",
         "displayText":"hi",
@@ -55,8 +54,8 @@ def webhook():
                     sender_id = messaging_event["sender"]["id"]        # the facebook ID of the person sending you the message
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
-
-                    send_message(sender_id, "got it, thanks"+message_text)
+                    resp=processResponse(message_text);
+                    send_message(sender_id,response_obj["result"]["fulfillment"]["speech"])
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -69,7 +68,18 @@ def webhook():
 
     return "ok", 200
 
+def processResponse(message_text):
+        ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
+        request = ai.text_request()
+        request.lang = 'en'  # optional, default value equal 'en'
+        # request.session_id = "<SESSION ID, UBIQUE FOR EACH USER>"
+        request.query = message_text
+        response = request.getresponse()
+        responsestr = response.read().decode('utf-8')
+        response_obj = json.loads(responsestr)
+        return response_obj
 
+print(response_obj["result"]["fulfillment"]["speech"])
 def send_message(recipient_id, message_text):
 
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
