@@ -40,7 +40,7 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
-                    send_message(sender_id, process_text_message(message_text))
+                    send_message(sender_id, message_text)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -72,23 +72,6 @@ def getresponse():
     r = make_response(res)
     r.headers['Content-Type'] = 'application/json'
     return r
-
-def process_text_message(msg):
-    ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
-    request = ai.text_request()
-    request.lang = 'en'  # optional, default value equal 'en'
-    request.session_id = "Ajf5rrrh"
-    request.query = msg
-
-    response = json.loads(request.getresponse().read().decode('utf-8'))
-    log(response)
-    responseStatus = response['status']['code']
-    if (responseStatus == 200):
-        # Sending the textual response of the bot.
-        return (response['result']['fulfillment']['speech'])
-
-    else:
-        return ("Sorry, I couldn't understand that question")
 
 
 def send_message(recipient_id, message_text):
