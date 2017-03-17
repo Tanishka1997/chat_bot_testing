@@ -19,7 +19,7 @@ def verify():
 
     return "Hello world", 200
 
-@app.route('/getrespone',methods=['POST'])
+@app.route('/getresponse',methods=['POST'])
 def getresponse():
     req = request.get_json(silent=True, force=True)
     print("Request:")
