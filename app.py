@@ -1,10 +1,16 @@
 import os
 import sys
 import json
-import apiai
+
 import requests
 from flask import Flask, request,make_response
-
+try:
+    import apiai
+except ImportError:
+    sys.path.append(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)
+    )
+import apiai
 app = Flask(__name__)
 
 CLIENT_ACCESS_TOKEN = 'e06246a85e0743b4af89a0a3240e92de'
