@@ -77,6 +77,7 @@ def processResponse(message_text):
         response = request.getresponse()
         responsestr = response.read().decode('utf-8')
         response_obj = json.loads(responsestr)
+        print response_obj
         return response_obj
 
 print(response_obj["result"]["fulfillment"]["speech"])
