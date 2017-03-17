@@ -53,8 +53,8 @@ def webhook():
 
     return "ok", 200
 
-@app.route('/getdata', methods=['POST'])
-def getdata():
+@app.route('/getresponse', methods=['POST'])
+def getresponse():
     req = request.get_json(silent=True, force=True)
     data = request.get_json()
     print("Request:")
